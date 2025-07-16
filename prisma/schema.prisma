@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  AUTHOR
+  READER
+}
+
+enum WebtoonStatus {
+  ONGOING
+  COMPLETED
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  username     String    @unique
+  password     String
+  role         UserRole  @default(READER)
+  isSubscribed Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+
+  createdWebtoons Webtoon[]  @relation("AuthorWebtoons")
+  comments        Comment[]
+  likes           Like[]
+  favorites       Favorite[]
+  followers       Follower[] @relation("FollowedBy")
+  following       Follower[] @relation("Following")
+}
+
+model Webtoon {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  status      WebtoonStatus @default(ONGOING)
+  coverUrl    String
+  createdAt   DateTime      @default(now())
+
+  authorId    String
+  author      User          @relation("AuthorWebtoons", fields: [authorId], references: [id])
+
+  chapters    Chapter[]
+  comments    Comment[]
+  likes       Like[]
+  favorites   Favorite[]
+}
+
+model Chapter {
+  id            String   @id @default(uuid())
+  title         String
+  chapterNumber Int
+  createdAt     DateTime @default(now())
+
+  webtoonId     String
+  webtoon       Webtoon  @relation(fields: [webtoonId], references: [id])
+
+  images        Image[]
+  comments      Comment[]
+  likes         Like[]
+}
+
+model Image {
+  id         String   @id @default(uuid())
+  imageUrl   String
+  position   Int
+
+  chapterId  String
+  chapter    Chapter  @relation(fields: [chapterId], references: [id])
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  content    String
+  createdAt  DateTime @default(now())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  webtoonId  String?
+  webtoon    Webtoon? @relation(fields: [webtoonId], references: [id])
+
+  chapterId  String?
+  chapter    Chapter? @relation(fields: [chapterId], references: [id])
+}
+
+model Like {
+  id         String   @id @default(uuid())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  webtoonId  String?
+  webtoon    Webtoon? @relation(fields: [webtoonId], references: [id])
+
+  chapterId  String?
+  chapter    Chapter? @relation(fields: [chapterId], references: [id])
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  webtoonId  String
+  webtoon    Webtoon  @relation(fields: [webtoonId], references: [id])
+}
+
+model Follower {
+  id         String   @id @default(uuid())
+
+  followerId String
+  followedId String
+
+  follower   User     @relation("Following", fields: [followerId], references: [id])
+  followed   User     @relation("FollowedBy", fields: [followedId], references: [id])
+}
