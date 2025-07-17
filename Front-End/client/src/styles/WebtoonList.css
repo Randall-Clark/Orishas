@@ -1,0 +1,5 @@
+.webtoon-list {
+  display: flex;
+  overflow-x: auto;
+  padding: 1rem;
+}

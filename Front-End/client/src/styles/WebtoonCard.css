@@ -1,0 +1,19 @@
+.webtoon-card {
+  background: #1e1e1e;
+  color: white;
+  width: 150px;
+  margin: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.webtoon-cover {
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid #444;
+}
+
+.webtoon-info {
+  padding: 0.5rem;
+}

@@ -1,0 +1,20 @@
+.sidebar {
+  background: #111;
+  color: white;
+  padding: 1rem;
+  width: 250px;
+}
+
+.popular-item {
+  margin-bottom: 1rem;
+}
+
+.popular-item p {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.popular-item span {
+  color: gold;
+  font-weight: bold;
+}
