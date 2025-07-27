@@ -1,62 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../components/Header';
-import Carousel from '../components/Carousel';
-import WebtoonList from '../components/WebtoonList';
-import Sidebar from '../components/Sidebar';
-import '../styles/Home.css';
+import api from '../api/axios';
 
 type Webtoon = {
+  id: string;
   title: string;
   coverUrl: string;
-  rating: number;
-  chapter: number;
-  description: string;
+  author: { username: string };
+  likes: number;
 };
 
-type PopularItem = {
-  title: string;
-  rating: number;
-  genres: string;
-};
-
-const Home = () => {
-  const [webtoons, setWebtoons] = useState<Webtoon[]>([]);
-  const [popular, setPopular] = useState<PopularItem[]>([]);
+const Home: React.FC = () => {
+  const [trending, setTrending] = useState<Webtoon[]>([]);
+  const [topWeek, setTopWeek] = useState<Webtoon[]>([]);
+  const [topLiked, setTopLiked] = useState<Webtoon[]>([]);
+  const [latest, setLatest] = useState<Webtoon[]>([]);
 
   useEffect(() => {
-    // Appels API à remplacer
-    setWebtoons([
-      {
-        title: 'Nano Machine',
-        coverUrl: '/covers/nano.jpg',
-        rating: 9.9,
-        chapter: 266,
-        description: 'Un jeune homme reçoit une technologie futuriste dans un monde martial.'
-      },
-      {
-        title: 'Pick Me Up',
-        coverUrl: '/covers/gacha.jpg',
-        rating: 10.0,
-        chapter: 157,
-        description: 'Un héros piégé dans un jeu de type gacha, avec des enjeux mortels.'
-      }
-    ]);
-    setPopular([
-      { title: 'The Great Mage Returns', rating: 9.2, genres: 'Action, Fantasy' },
-      { title: 'Nano Machine', rating: 9.9, genres: 'Action, Martial Arts' }
-    ]);
+    api.get('/webtoons/trending').then(res => setTrending(res.data));
+    api.get('/webtoons/top-week').then(res => setTopWeek(res.data));
+    api.get('/webtoons/top-liked').then(res => setTopLiked(res.data));
+    api.get('/webtoons/latest').then(res => setLatest(res.data));
   }, []);
 
-  return (
-    <div className="home">
-      <Header />
-      <div className="main-content">
-        <Carousel items={webtoons} />
-        <div className="content-row">
-          <WebtoonList webtoons={webtoons} />
-          <Sidebar items={popular} />
-        </div>
+  const renderSection = (title: string, data: Webtoon[]) => (
+    <div>
+      <h2>{title}</h2>
+      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        {data.map(w => (
+          <div key={w.id} style={{ width: '150px' }}>
+            <img src={w.coverUrl} alt={w.title} style={{ width: '100%' }} />
+            <h4>{w.title}</h4>
+            <p>{w.author?.username}</p>
+            <p>{w.likes} likes</p>
+          </div>
+        ))}
       </div>
+    </div>
+  );
+
+  return (
+    <div style={{ padding: '1rem' }}>
+      {renderSection('🔥 Tendances', trending)}
+      {renderSection('📈 Plus lus cette semaine', topWeek)}
+      {renderSection('💖 Mieux notés', topLiked)}
+      {renderSection('🆕 Nouveaux', latest)}
     </div>
   );
 };

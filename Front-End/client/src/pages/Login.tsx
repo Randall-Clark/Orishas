@@ -1,22 +1,54 @@
 import React, { useState } from 'react';
-import '../styles/Auth.css';
+import { loginUser } from '../services/auth';
 
-export default function Login() {
+const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [token, setToken] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    // Appel API
-    console.log('Login:', { email, password });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const data = await loginUser(email, password);
+      setToken(data.token);
+      console.log('Utilisateur connecté:', data.user);
+      // Tu peux stocker le token dans localStorage ou utiliser un context
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Erreur de connexion');
+    }
   };
 
   return (
-    <div className="auth-container">
-      <h2>Login</h2>
-      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleLogin}>Login</button>
+    <div style={{ maxWidth: '400px', margin: 'auto' }}>
+      <h2>Connexion</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Email :</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Mot de passe :</label>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Se connecter</button>
+      </form>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {token && <p style={{ color: 'green' }}>Connexion réussie ✅</p>}
     </div>
   );
-}
+};
 
+export default Login;

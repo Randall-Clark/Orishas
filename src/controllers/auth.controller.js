@@ -42,7 +42,7 @@ exports.login = async (req, res) => {
 
         // Check if entered user email match a user that exists
         const user = await prisma.user.findUnique({ where: { email } });
-        if(!user) return res.status(404).json({ message: "User not found." });
+        if(!user) return res.status(404).json({ message: "User is inexistant in here bro." });
 
 
         // Check if entered password match the user password

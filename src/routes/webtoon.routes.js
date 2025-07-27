@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const webtoonController = require('../controllers/webtoon.controller');
-const { verifyToken, requireRole } = require('../middlewares/auth.middleware');
+const { verifyToken, requireRole } = require('../middlewares/auth.middlewares');
 
 router.get('/', webtoonController.getAllWebtoons);
 router.get('/:id', webtoonController.getWebtoonById);
